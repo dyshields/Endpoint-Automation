@@ -1,0 +1,72 @@
+const jsonData = pm.response.json();
+
+// Status code check
+pm.test(pm.info.requestName + " - Status code is 200", () => {
+    pm.response.to.have.status(200);
+});
+
+// Response time check
+pm.test(pm.info.requestName + " - Response time is less than 200ms", () => {
+    pm.expect(pm.response.responseTime).to.be.below(200);
+});
+
+// Schema Validation
+pm.test(pm.info.requestName + " - Schema Validation", () => {
+    pm.expect(jsonData).to.be.an('array');
+
+    pm.expect(jsonData[0].userId).to.exist;
+    pm.expect(jsonData[0].userId).to.be.a("number");
+
+    pm.expect(jsonData[0].id).to.exist;
+    pm.expect(jsonData[0].id).to.be.a("number");
+
+    pm.expect(jsonData[0].title).to.exist;
+    pm.expect(jsonData[0].title).to.be.a("string");
+
+    pm.expect(jsonData[0].body).to.exist;
+    pm.expect(jsonData[0].body).to.be.a("string");
+});
+
+// Response contains at least one object
+pm.test(pm.info.requestName + " - Response contains at least one object", () => {
+    pm.expect(jsonData).to.be.an('array');
+    pm.expect(jsonData).to.have.lengthOf.at.least(1);
+});
+
+// Each object has the required fields
+pm.test(pm.info.requestName + " - Each object has the required fields", () => {
+    jsonData.forEach((post) => {
+        pm.expect(post.userId).to.exist;
+        pm.expect(post.id).to.exist;
+        pm.expect(post.title).to.exist;
+        pm.expect(post.body).to.exist;
+    });
+});
+
+// Each userId is a positive integer
+pm.test(pm.info.requestName + " - Each userId is a positive integer", () => {
+    jsonData.forEach((post) => {
+        pm.expect(post.userId).to.be.a('number').greaterThan(0);
+    });
+});
+
+// Each id is a positive integer
+pm.test(pm.info.requestName + " - Each id is a positive integer", () => {
+    jsonData.forEach((post) => {
+        pm.expect(post.id).to.be.a('number').greaterThan(0);
+    });
+});
+
+// Each title is a non-empty string
+pm.test(pm.info.requestName + " - Each title is a non-empty string", () => {
+    jsonData.forEach((post) => {
+        pm.expect(post.title).to.have.lengthOf.at.least(1);
+    });
+
+// Each body is a non-empty string
+ pm.test(pm.info.requestName + " - Each body is a non-empty string", () => {
+    jsonData.forEach((post) => {
+        pm.expect(post.body).to.have.lengthOf.at.least(1);
+    });
+});
+});
